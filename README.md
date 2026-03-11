@@ -1066,7 +1066,7 @@ Roadmap pengembangan script installer dari tahap awal hingga production-ready.
 ### Status Keseluruhan
 
 ```
-████████████████████░░░░░░░░░░░░░░░░░░░░ 50%  (Tahap 1-5 selesai dari 10 tahap)
+████████████████████████████████░░░░░░░░ 70%  (Tahap 1-7 selesai dari 10 tahap)
 ```
 
 ### Overview Tahap
@@ -1078,8 +1078,8 @@ Roadmap pengembangan script installer dari tahap awal hingga production-ready.
 | 3 | Domain, SSL, Nginx & Xray-core | ✅ Selesai | `setup-domain.sh` | Domain, SSL, reverse proxy, multi-protocol Xray |
 | 4 | SSH Tunneling, HAProxy & Services | ✅ Selesai | `setup-ssh.sh` | Dropbear, Stunnel, HAProxy, Squid, BadVPN, OHP |
 | 5 | Protokol Tambahan | ✅ Selesai | `setup-protocol.sh` | Hysteria2, Trojan-Go, OpenVPN, SoftEther, WARP |
-| 6 | Manajemen Akun & User | 🔲 Belum | `setup-account.sh` | CRUD akun per protokol, limit IP/quota, lock/ban |
-| 7 | Menu Sistem & CLI Dashboard | 🔲 Belum | `setup-menu.sh` | Menu utama, sub-menu protokol, command shortcut |
+| 6 | Manajemen Akun & User | ✅ Selesai | `setup-account.sh` | CRUD akun per protokol, limit IP/quota, lock/ban |
+| 7 | Menu Sistem & CLI Dashboard | ✅ Selesai | `setup-menu.sh` | Menu utama, sub-menu protokol, command shortcut |
 | 8 | REST API & Bot Integrasi | 🔲 Belum | `setup-api.sh` | REST API port 9000, Telegram Bot, webhook |
 | 9 | Monitoring, Backup & Keamanan | 🔲 Belum | `setup-monitor.sh` | vnStat, Fail2ban lanjutan, Rclone, web panel |
 | 10 | Finalisasi & Produksi | 🔲 Belum | `setup-final.sh` | Integrasi, optimasi, auto-installer tunggal |
@@ -1248,34 +1248,34 @@ Script manajemen akun untuk semua protokol. Setiap protokol memiliki operasi CRU
 
 ---
 
-### Tahap 7: Menu Sistem & CLI Dashboard 🔲
+### Tahap 7: Menu Sistem & CLI Dashboard ✅
 
-> **Script:** `setup-menu.sh` — **BELUM DIMULAI**
+> **Script:** `setup-menu.sh` — **2.271 baris** | **236 tests**
 
 Instalasi menu interaktif CLI sebagai antarmuka utama pengguna.
 
-**Komponen yang akan diimplementasikan:**
+**Komponen yang diimplementasikan:**
 
-- [ ] **Menu Utama** (`/usr/local/bin/menu`) — Dashboard dengan box drawing dan warna
-- [ ] **Menu SSH & OpenVPN** (`menu-ssh`) — Manajemen akun SSH, OpenVPN
-- [ ] **Menu VMess** (`menu-vmess`) — Manajemen akun VMess
-- [ ] **Menu VLESS** (`menu-vless`) — Manajemen akun VLESS
-- [ ] **Menu Trojan** (`menu-trojan`) — Manajemen akun Trojan
-- [ ] **Menu Shadowsocks** (`menu-shadowsocks`) — Manajemen akun Shadowsocks
-- [ ] **Menu Socks** (`menu-socks`) — Manajemen akun Socks
-- [ ] **Menu Hysteria2** (`menu-hysteria2`) — Manajemen akun Hysteria2
-- [ ] **Menu Trojan-Go** (`menu-trojan-go`) — Manajemen akun Trojan-Go
-- [ ] **Menu SoftEther** (`menu-softether`) — Manajemen SoftEther VPN
-- [ ] **Menu WARP** (`menu-warp`) — Manajemen Cloudflare WARP
-- [ ] **Menu Backup** (`menu-backup`) — Backup & restore via Rclone
-- [ ] **Menu API** (`menu-api`) — Konfigurasi REST API
-- [ ] **Menu Bot** (`menu-bot`) — Konfigurasi Telegram Bot
-- [ ] **Menu System** (`menu-system`) — Settings sistem (reboot, timezone, banner, dll)
-- [ ] **Running Services** (`running`) — Cek status semua service
-- [ ] **Speedtest** (`speedtest`) — Speedtest by Ookla
-- [ ] **Bandwidth** (`vnstat`) — Monitor bandwidth
-- [ ] **Sub-Menu Protocol** — 14 operasi per protokol (create, delete, renew, lock, ban, dll)
-- [ ] **Auto-complete** — Registrasi command shortcut di `/usr/local/bin/`
+- [x] **Menu Utama** (`/usr/local/bin/menu`) — Dashboard dengan box drawing dan warna
+- [x] **Menu SSH & OpenVPN** (`menu-ssh`) — Manajemen akun SSH, OpenVPN
+- [x] **Menu VMess** (`menu-vmess`) — Manajemen akun VMess
+- [x] **Menu VLESS** (`menu-vless`) — Manajemen akun VLESS
+- [x] **Menu Trojan** (`menu-trojan`) — Manajemen akun Trojan
+- [x] **Menu Shadowsocks** (`menu-shadowsocks`) — Manajemen akun Shadowsocks
+- [x] **Menu Socks** (`menu-socks`) — Manajemen akun Socks
+- [x] **Menu Hysteria2** (`menu-hysteria2`) — Manajemen akun Hysteria2
+- [x] **Menu Trojan-Go** (`menu-trojan-go`) — Manajemen akun Trojan-Go
+- [x] **Menu SoftEther** (`menu-softether`) — Manajemen SoftEther VPN
+- [x] **Menu WARP** (`menu-warp`) — Manajemen Cloudflare WARP
+- [x] **Menu Backup** (`menu-backup`) — Backup & restore via Rclone
+- [x] **Menu API** (`menu-api`) — Konfigurasi REST API
+- [x] **Menu Bot** (`menu-bot`) — Konfigurasi Telegram Bot
+- [x] **Menu System** (`menu-system`) — Settings sistem (reboot, timezone, banner, dll)
+- [x] **Running Services** (`running`) — Cek status semua service
+- [x] **Speedtest** (`speedtest`) — Speedtest by Ookla
+- [x] **Bandwidth** (`vnstat`) — Monitor bandwidth
+- [x] **Sub-Menu Protocol** — 14 operasi per protokol (create, delete, renew, lock, ban, dll)
+- [x] **Auto-complete** — Registrasi command shortcut di `/usr/local/bin/`
 
 **Test:** `tests/test_setup_menu.sh`
 
@@ -1380,8 +1380,7 @@ Integrasi semua komponen, optimasi, dan pembuatan auto-installer tunggal.
 ### Timeline Estimasi
 
 ```
-Tahap 1-6  : ████████████████████████████  100%  ✅ Selesai (Infrastruktur + Protokol + Akun)
-Tahap 7    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 Menu & CLI
+Tahap 1-7  : ████████████████████████████████  100%  ✅ Selesai (Infrastruktur + Protokol + Akun + Menu)
 Tahap 8    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 API & Bot
 Tahap 9    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 Monitoring & Security
 Tahap 10   : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 Finalisasi
@@ -1391,8 +1390,8 @@ Tahap 10   : ░░░░░░░░░░░░░░░░░░░░   0%  
 |------|-------|----------|-----------|
 | **Fase 1 — Infrastruktur** | Tahap 1-4 | ✅ Selesai | — |
 | **Fase 2 — Ekspansi Protokol** | Tahap 5 | ✅ Selesai | — |
-| **Fase 3 — User Experience** | Tahap 6-7 | 🟡 Tahap 6 Selesai | 🔴 Tinggi |
-| **Fase 4 — Integrasi** | Tahap 8 | 2-3 minggu | 🟡 Sedang |
+| **Fase 3 — User Experience** | Tahap 6-7 | ✅ Selesai | — |
+| **Fase 4 — Integrasi** | Tahap 8 | 2-3 minggu | 🔴 Tinggi |
 | **Fase 5 — Hardening** | Tahap 9-10 | 3-4 minggu | 🟡 Sedang |
 
 > **Total estimasi:** 10-14 minggu untuk script production-ready
@@ -1401,7 +1400,24 @@ Tahap 10   : ░░░░░░░░░░░░░░░░░░░░   0%  
 
 ## 📝 Changelog
 
-### v0.6.0 — Tahap 6 (Current)
+### v0.7.0 — Tahap 7 (Current)
+- ✅ Menu Utama (`menu`) — Dashboard interaktif dengan box drawing & server info
+- ✅ 8 Protocol Sub-menus (SSH, VMess, VLESS, Trojan, Shadowsocks, Socks, Hysteria2, Trojan-Go)
+- ✅ 14 operasi per protokol (create, bulk create, delete, extend, check login, details, lock, unlock, limit IP, limit quota, ban, unban, recover, list)
+- ✅ Menu SoftEther VPN — Status, start, stop, restart, config
+- ✅ Menu Cloudflare WARP — Enable, disable, status, mode
+- ✅ Menu Backup — Backup, restore, Rclone setup, auto backup
+- ✅ Menu API — Start, stop, restart, status, port config, API key
+- ✅ Menu Telegram Bot — Token registration, start, stop, status, admin ID
+- ✅ Menu System — Reboot, timezone, banner, auto reboot, clear log, memory, kernel
+- ✅ Running Services script — Status check untuk 14+ services
+- ✅ Speedtest script — Ookla speedtest wrapper
+- ✅ Bandwidth script — vnstat wrapper
+- ✅ Menu functions library (/etc/vpnray/menu-functions.sh)
+- ✅ Command shortcuts registered di /usr/local/bin/
+- ✅ Auto-menu on login via .profile
+
+### v0.6.0 — Tahap 6
 - ✅ SSH account management (create, delete, extend, lock/unlock, ban/unban, cek login, limit IP)
 - ✅ VMess account management (UUID, CRUD, lock, ban, limit IP/quota)
 - ✅ VLESS account management (UUID, CRUD, lock, ban, limit IP/quota)
