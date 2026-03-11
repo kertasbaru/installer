@@ -141,46 +141,74 @@ print_header() {
 # ============================================================================
 
 check_root() {
-    if [[ "$EUID" -ne 0 ]]; then
-        log_error "Script harus dijalankan sebagai root!"
+    if [[ "$(id -u)" -ne 0 ]]; then
+        log_error "Script ini harus dijalankan sebagai root!"
+        echo -e "${RED}Gunakan: sudo ./setup-final.sh${NC}"
         exit 1
     fi
     log "Pengecekan root: OK"
 }
 
 check_os() {
-    # shellcheck disable=SC1091
-    source /etc/os-release 2>/dev/null
+    if [[ ! -f /etc/os-release ]]; then
+        log_error "File /etc/os-release tidak ditemukan. OS tidak didukung."
+        exit 1
+    fi
+
+    # shellcheck source=/dev/null
+    source /etc/os-release
+
+    local supported=false
+
     case "$ID" in
         ubuntu)
             case "$VERSION_ID" in
-                20.04|22.04|24.04) ;;
-                *) log_error "Ubuntu $VERSION_ID tidak didukung"; exit 1 ;;
+                20.04|22.04|24.04)
+                    supported=true
+                    ;;
             esac
             ;;
         debian)
             case "$VERSION_ID" in
-                10|11|12) ;;
-                *) log_error "Debian $VERSION_ID tidak didukung"; exit 1 ;;
+                10|11|12)
+                    supported=true
+                    ;;
             esac
             ;;
-        *) log_error "OS tidak didukung: $ID"; exit 1 ;;
     esac
-    log "OS: $PRETTY_NAME — OK"
+
+    if [[ "$supported" != true ]]; then
+        log_error "OS tidak didukung: $PRETTY_NAME"
+        echo -e "${RED}OS yang didukung:${NC}"
+        echo "  - Ubuntu 20.04 LTS (focal)"
+        echo "  - Ubuntu 22.04 LTS (jammy)"
+        echo "  - Ubuntu 24.04 LTS (noble)"
+        echo "  - Debian 10 (buster)"
+        echo "  - Debian 11 (bullseye)"
+        echo "  - Debian 12 (bookworm)"
+        exit 1
+    fi
+
+    log "Pengecekan OS: $PRETTY_NAME — OK"
 }
 
 check_arch() {
     local arch
     arch=$(uname -m)
+
     if [[ "$arch" != "x86_64" ]]; then
-        log_error "Arsitektur tidak didukung: $arch (hanya x86_64)"
+        log_error "Arsitektur tidak didukung: $arch"
+        echo -e "${RED}Script ini hanya mendukung arsitektur amd64 (x86_64).${NC}"
         exit 1
     fi
-    log "Arsitektur: $arch — OK"
+
+    log "Pengecekan arsitektur: $arch — OK"
 }
 
 check_virt() {
     local virt_type=""
+
+    # Deteksi tipe virtualisasi
     if command -v systemd-detect-virt &>/dev/null; then
         virt_type=$(systemd-detect-virt 2>/dev/null)
     elif [[ -f /proc/vz/veinfo ]]; then
@@ -192,15 +220,21 @@ check_virt() {
     elif grep -qi "hypervisor" /proc/cpuinfo 2>/dev/null; then
         virt_type="kvm"
     fi
+
+    # OpenVZ dan LXC tidak didukung
     case "$virt_type" in
         openvz|lxc|lxc-libvirt)
             log_error "Virtualisasi tidak didukung: $virt_type"
+            echo -e "${RED}Script ini hanya mendukung KVM / Xen.${NC}"
+            echo -e "${RED}OpenVZ dan LXC tidak didukung.${NC}"
             exit 1
             ;;
     esac
+
     if [[ -z "$virt_type" || "$virt_type" == "none" ]]; then
         virt_type="Bare Metal / Tidak terdeteksi"
     fi
+
     log "Pengecekan virtualisasi: $virt_type — OK"
 }
 
@@ -874,8 +908,8 @@ YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-if [[ "$EUID" -ne 0 ]]; then
-    echo -e "${RED}Script harus dijalankan sebagai root!${NC}"
+if [[ "$(id -u)" -ne 0 ]]; then
+    echo -e "${RED}Script ini harus dijalankan sebagai root!${NC}"
     exit 1
 fi
 
@@ -995,8 +1029,8 @@ YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-if [[ "$EUID" -ne 0 ]]; then
-    echo -e "${RED}Script harus dijalankan sebagai root!${NC}"
+if [[ "$(id -u)" -ne 0 ]]; then
+    echo -e "${RED}Script ini harus dijalankan sebagai root!${NC}"
     exit 1
 fi
 
@@ -1103,8 +1137,8 @@ YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-if [[ "$EUID" -ne 0 ]]; then
-    echo -e "${RED}Script harus dijalankan sebagai root!${NC}"
+if [[ "$(id -u)" -ne 0 ]]; then
+    echo -e "${RED}Script ini harus dijalankan sebagai root!${NC}"
     exit 1
 fi
 
@@ -1241,8 +1275,8 @@ YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-if [[ "$EUID" -ne 0 ]]; then
-    echo -e "${RED}Script harus dijalankan sebagai root!${NC}"
+if [[ "$(id -u)" -ne 0 ]]; then
+    echo -e "${RED}Script ini harus dijalankan sebagai root!${NC}"
     exit 1
 fi
 
