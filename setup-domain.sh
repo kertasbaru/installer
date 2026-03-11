@@ -336,7 +336,11 @@ setup_cloudflare_domain() {
         -H "Content-Type: application/json" 2>/dev/null)
 
     local zone_id
-    zone_id=$(echo "$zone_response" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
+    if command -v jq &>/dev/null; then
+        zone_id=$(echo "$zone_response" | jq -r '.result[0].id // empty' 2>/dev/null)
+    else
+        zone_id=$(echo "$zone_response" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
+    fi
 
     if [[ -z "$zone_id" ]]; then
         log_warn "Zone ID tidak ditemukan untuk domain $main_domain."
@@ -354,7 +358,11 @@ setup_cloudflare_domain() {
         -H "Content-Type: application/json" 2>/dev/null)
 
     local record_id
-    record_id=$(echo "$record_response" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
+    if command -v jq &>/dev/null; then
+        record_id=$(echo "$record_response" | jq -r '.result[0].id // empty' 2>/dev/null)
+    else
+        record_id=$(echo "$record_response" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
+    fi
 
     if [[ -n "$record_id" ]]; then
         # Update existing record
@@ -893,7 +901,11 @@ install_xray() {
 
         # Fallback: download manual dari GitHub releases
         local xray_version
-        xray_version=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
+        if command -v jq &>/dev/null; then
+            xray_version=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | jq -r '.tag_name // empty' 2>/dev/null)
+        else
+            xray_version=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
+        fi
 
         if [[ -z "$xray_version" ]]; then
             log_error "Tidak dapat mendeteksi versi Xray terbaru!"
@@ -939,21 +951,6 @@ install_xray() {
 
 create_xray_config() {
     log "Membuat konfigurasi dasar Xray-core..."
-
-    # Generate UUID untuk default user
-    local uuid
-    if command -v xray &>/dev/null; then
-        uuid=$(xray uuid 2>/dev/null)
-    fi
-
-    if [[ -z "$uuid" ]]; then
-        # Fallback UUID generation
-        uuid=$(cat /proc/sys/kernel/random/uuid 2>/dev/null)
-    fi
-
-    if [[ -z "$uuid" ]]; then
-        uuid="00000000-0000-0000-0000-000000000000"
-    fi
 
     # Buat config.json utama Xray
     cat > "$XRAY_CONFIG_FILE" <<XRAY_CONFIG
