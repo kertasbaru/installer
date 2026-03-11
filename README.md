@@ -888,16 +888,18 @@ curl -X POST http://your-server:9000/api/vmess/create \
 
 ### Environment Variables
 
+> 📄 Lihat file [`.env.example`](.env.example) untuk template lengkap environment variables.
+
 ```bash
 # Domain & SSL
-DOMAIN="vpn.example.com"
-CF_EMAIL="user@example.com"
-CF_API_KEY="your-cloudflare-api-key"
-CF_ZONE_ID="your-zone-id"
+DOMAIN="vpn-wuzzstore.my.id"
+CF_EMAIL="wuzzstore04@gmail.com"
+CF_API_KEY="your-cloudflare-global-api-key"
+CF_ZONE_ID="your-cloudflare-zone-id"
 
 # API Configuration
 API_PORT=9000
-API_KEY="your-secure-api-key"
+API_KEY="your-api-key-hex-string"
 
 # Telegram Bot
 BOT_TOKEN="your-telegram-bot-token"
@@ -912,6 +914,14 @@ TIMEZONE="Asia/Jakarta"
 
 # Swap
 SWAP_SIZE="1G"  # atau "2G"
+```
+
+**Cara menggunakan:**
+
+```bash
+cp .env.example .env
+nano .env  # Edit sesuai konfigurasi Anda
+source .env
 ```
 
 ### Tutorial Konfigurasi
@@ -1046,6 +1056,8 @@ Script ini dirancang lightweight (2-3% CPU idle). Jika CPU tinggi:
 
 Script ini dikembangkan dengan referensi dan inspirasi dari repository-repository open source berikut:
 
+### Core Engine & Protocol
+
 | Repository | Deskripsi |
 |------------|-----------|
 | [XTLS/Xray-core](https://github.com/XTLS/Xray-core) | Core engine Xray proxy |
@@ -1053,9 +1065,34 @@ Script ini dikembangkan dengan referensi dan inspirasi dari repository-repositor
 | [apernet/hysteria](https://github.com/apernet/hysteria) | Hysteria2 protocol engine |
 | [p4gefau1t/trojan-go](https://github.com/p4gefau1t/trojan-go) | Trojan-Go engine |
 | [SoftEtherVPN/SoftEtherVPN](https://github.com/SoftEtherVPN/SoftEtherVPN) | SoftEther VPN server |
+| [v2fly/v2ray-core](https://github.com/v2fly/v2ray-core) | V2Ray core (referensi protokol) |
+
+### Installer & Script Referensi
+
+| Repository | Deskripsi |
+|------------|-----------|
 | [mack-a/v2ray-agent](https://github.com/mack-a/v2ray-agent) | 8-in-1 Xray/Hysteria2/sing-box script |
 | [FN-Rerechan02/Autoscript](https://github.com/FN-Rerechan02/Autoscript) | AIO VPN (SSH, Xray, UDP, OHP, Argo) |
 | [GegeDevs/sshvpn-script](https://github.com/GegeDevs/sshvpn-script) | SSH VPN script |
+
+### Tools & Dependency
+
+| Repository | Deskripsi |
+|------------|-----------|
+| [acmesh-official/acme.sh](https://github.com/acmesh-official/acme.sh) | SSL certificate management |
+| [rclone/rclone](https://github.com/rclone/rclone) | Cloud storage sync (backup/restore) |
+| [cloudflare/cloudflare-go](https://github.com/cloudflare/cloudflare-go) | Cloudflare API reference |
+| [fail2ban/fail2ban](https://github.com/fail2ban/fail2ban) | Intrusion prevention system |
+| [vergoh/vnstat](https://github.com/vergoh/vnstat) | Network traffic monitoring |
+
+### Dokumentasi & Spesifikasi
+
+| Sumber | Deskripsi |
+|--------|-----------|
+| [Xray Documentation](https://xtls.github.io/) | Dokumentasi resmi Xray-core |
+| [Hysteria2 Documentation](https://v2.hysteria.network/) | Dokumentasi resmi Hysteria2 |
+| [Cloudflare API v4](https://developers.cloudflare.com/api/) | Referensi API Cloudflare |
+| [Telegram Bot API](https://core.telegram.org/bots/api) | Referensi API Telegram Bot |
 
 ---
 
@@ -1066,7 +1103,7 @@ Roadmap pengembangan script installer dari tahap awal hingga production-ready.
 ### Status Keseluruhan
 
 ```
-████████████████████████████████████████ 90%  (Tahap 1-9 selesai dari 10 tahap)
+████████████████████████████████████████ 100%  (Tahap 1-10 selesai)
 ```
 
 ### Overview Tahap
@@ -1082,7 +1119,7 @@ Roadmap pengembangan script installer dari tahap awal hingga production-ready.
 | 7 | Menu Sistem & CLI Dashboard | ✅ Selesai | `setup-menu.sh` | Menu utama, sub-menu protokol, command shortcut |
 | 8 | REST API & Bot Integrasi | ✅ Selesai | `setup-api.sh` | REST API port 9000, Telegram Bot, webhook |
 | 9 | Monitoring, Backup & Keamanan | ✅ Selesai | `setup-monitor.sh` | vnStat, Fail2ban lanjutan, Rclone, web panel |
-| 10 | Finalisasi & Produksi | 🔲 Belum | `setup-final.sh` | Integrasi, optimasi, auto-installer tunggal |
+| 10 | Finalisasi & Produksi | ✅ Selesai | `setup-final.sh` | Integrasi, optimasi, auto-installer tunggal |
 
 ---
 
