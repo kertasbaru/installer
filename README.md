@@ -1066,7 +1066,7 @@ Roadmap pengembangan script installer dari tahap awal hingga production-ready.
 ### Status Keseluruhan
 
 ```
-████████████████░░░░░░░░░░░░░░░░░░░░░░░░ 40%  (Tahap 1-4 selesai dari 10 tahap)
+████████████████████░░░░░░░░░░░░░░░░░░░░ 50%  (Tahap 1-5 selesai dari 10 tahap)
 ```
 
 ### Overview Tahap
@@ -1077,7 +1077,7 @@ Roadmap pengembangan script installer dari tahap awal hingga production-ready.
 | 2 | Install Dependencies & Setup | ✅ Selesai | `install.sh` | Instalasi paket, disable IPv6, setup direktori |
 | 3 | Domain, SSL, Nginx & Xray-core | ✅ Selesai | `setup-domain.sh` | Domain, SSL, reverse proxy, multi-protocol Xray |
 | 4 | SSH Tunneling, HAProxy & Services | ✅ Selesai | `setup-ssh.sh` | Dropbear, Stunnel, HAProxy, Squid, BadVPN, OHP |
-| 5 | Protokol Tambahan | 🔲 Belum | `setup-protocol.sh` | Hysteria2, Trojan-Go, OpenVPN, SoftEther, WARP |
+| 5 | Protokol Tambahan | ✅ Selesai | `setup-protocol.sh` | Hysteria2, Trojan-Go, OpenVPN, SoftEther, WARP |
 | 6 | Manajemen Akun & User | 🔲 Belum | `setup-account.sh` | CRUD akun per protokol, limit IP/quota, lock/ban |
 | 7 | Menu Sistem & CLI Dashboard | 🔲 Belum | `setup-menu.sh` | Menu utama, sub-menu protokol, command shortcut |
 | 8 | REST API & Bot Integrasi | 🔲 Belum | `setup-api.sh` | REST API port 9000, Telegram Bot, webhook |
@@ -1193,26 +1193,28 @@ Instalasi SSH tunneling, load balancer, proxy services, dan UDP gateway.
 
 ---
 
-### Tahap 5: Protokol Tambahan 🔲
+### Tahap 5: Protokol Tambahan ✅
 
-> **Script:** `setup-protocol.sh` — **BELUM DIMULAI**
+> **Script:** `setup-protocol.sh` (1.460 baris) — **SELESAI**
 
 Instalasi protokol VPN/tunnel tambahan di luar Xray-core.
 
-**Komponen yang akan diimplementasikan:**
+**Komponen yang diimplementasikan:**
 
-- [ ] **Hysteria2** — Install binary, config QUIC/UDP (port random atau 80/443)
-- [ ] **Trojan-Go** — Install binary, config WebSocket TLS (port 80, 443)
-- [ ] **OpenVPN** — Install & konfigurasi server TCP (port 1194, 2294) dan UDP (port 2200, 2295)
-- [ ] **OpenVPN Stunnel** — TLS tunnel untuk OpenVPN (port 2296)
-- [ ] **SoftEther VPN** — Install & konfigurasi multi-protocol server (SSTP 4433, L2TP/IPSec 500/1701/4500, OpenVPN 1194/1195)
-- [ ] **Cloudflare WARP** — Install & konfigurasi WireGuard via Cloudflare (port 51820)
-- [ ] **SlowDNS/DNSTT** — Install & konfigurasi DNS tunneling (port 53, 5300, 2222)
-- [ ] **UDP Custom** — Handler UDP tunneling custom port (1-65535)
-- [ ] Buat systemd service untuk setiap protokol
-- [ ] Integrasi SSL certificate yang sudah ada
+- [x] **Hysteria2** — Install binary dari GitHub, config QUIC/UDP (port 443), systemd service
+- [x] **Trojan-Go** — Install binary dari GitHub, config WebSocket TLS (port 443), systemd service
+- [x] **OpenVPN** — Install & konfigurasi server TCP (port 1194, 2294) dan UDP (port 2200, 2295)
+- [x] **OpenVPN Stunnel** — TLS tunnel untuk OpenVPN (port 2296)
+- [x] **OpenVPN PKI** — EasyRSA setup, generate CA/server certificate
+- [x] **OpenVPN NAT** — IP forwarding dan masquerade untuk VPN subnet
+- [x] **SoftEther VPN** — Install & build dari source, multi-protocol server (SSTP 4433, L2TP/IPSec 500/1701/4500, OpenVPN 1194/1195)
+- [x] **Cloudflare WARP** — Install via repository/deb, konfigurasi proxy mode (port 51820)
+- [x] **SlowDNS/DNSTT** — Install & konfigurasi DNS tunneling (port 53, 5300, 2222), generate keypair
+- [x] **UDP Custom** — Handler UDP tunneling custom port (1-65535), config JSON
+- [x] Buat systemd service untuk setiap protokol
+- [x] Integrasi SSL certificate yang sudah ada (symlink, permission)
 
-**Test:** `tests/test_setup_protocol.sh`
+**Test:** `tests/test_setup_protocol.sh` — 163 unit test ✅
 
 ---
 
@@ -1378,8 +1380,7 @@ Integrasi semua komponen, optimasi, dan pembuatan auto-installer tunggal.
 ### Timeline Estimasi
 
 ```
-Tahap 1-4  : ████████████████████ 100%  ✅ Selesai (Infrastruktur dasar)
-Tahap 5    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 Protokol tambahan
+Tahap 1-5  : ████████████████████████ 100%  ✅ Selesai (Infrastruktur + Protokol)
 Tahap 6    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 Manajemen akun
 Tahap 7    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 Menu & CLI
 Tahap 8    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 API & Bot
@@ -1390,7 +1391,7 @@ Tahap 10   : ░░░░░░░░░░░░░░░░░░░░   0%  
 | Fase | Tahap | Estimasi | Prioritas |
 |------|-------|----------|-----------|
 | **Fase 1 — Infrastruktur** | Tahap 1-4 | ✅ Selesai | — |
-| **Fase 2 — Ekspansi Protokol** | Tahap 5 | 2-3 minggu | 🔴 Tinggi |
+| **Fase 2 — Ekspansi Protokol** | Tahap 5 | ✅ Selesai | — |
 | **Fase 3 — User Experience** | Tahap 6-7 | 3-4 minggu | 🔴 Tinggi |
 | **Fase 4 — Integrasi** | Tahap 8 | 2-3 minggu | 🟡 Sedang |
 | **Fase 5 — Hardening** | Tahap 9-10 | 3-4 minggu | 🟡 Sedang |
@@ -1401,7 +1402,20 @@ Tahap 10   : ░░░░░░░░░░░░░░░░░░░░   0%  
 
 ## 📝 Changelog
 
-### v0.4.0 — Tahap 4 (Current)
+### v0.5.0 — Tahap 5 (Current)
+- ✅ Hysteria2 QUIC/UDP (port 443) — binary dari apernet/hysteria
+- ✅ Trojan-Go WebSocket TLS (port 443) — binary dari p4gefau1t/trojan-go
+- ✅ OpenVPN TCP (port 1194, 2294) dan UDP (port 2200, 2295)
+- ✅ OpenVPN Stunnel TLS (port 2296)
+- ✅ OpenVPN PKI via EasyRSA
+- ✅ SoftEther VPN Server (SSTP 4433, L2TP/IPSec, OpenVPN 1194/1195)
+- ✅ Cloudflare WARP (port 51820)
+- ✅ SlowDNS/DNSTT (port 53, 5300, 2222)
+- ✅ UDP Custom handler (port 1-65535)
+- ✅ SSL certificate integration untuk semua protokol
+- ✅ Systemd service untuk setiap protokol
+
+### v0.4.0 — Tahap 4
 - ✅ Dropbear SSH multi-port (80, 143, 443)
 - ✅ Stunnel4 SSL tunnel (port 446, 445)
 - ✅ SSH WebSocket handler (Python3, port 8880)
