@@ -1055,4 +1055,404 @@ Script ini dikembangkan dengan referensi dan inspirasi dari repository-repositor
 | [SoftEtherVPN/SoftEtherVPN](https://github.com/SoftEtherVPN/SoftEtherVPN) | SoftEther VPN server |
 | [mack-a/v2ray-agent](https://github.com/mack-a/v2ray-agent) | 8-in-1 Xray/Hysteria2/sing-box script |
 | [FN-Rerechan02/Autoscript](https://github.com/FN-Rerechan02/Autoscript) | AIO VPN (SSH, Xray, UDP, OHP, Argo) |
-| [GegeDevs/sshvpn-script](https://github.com/GegeDevs/sshvpn-script) | SSH
+| [GegeDevs/sshvpn-script](https://github.com/GegeDevs/sshvpn-script) | SSH VPN script |
+
+---
+
+## 🗺️ Roadmap
+
+Roadmap pengembangan script installer dari tahap awal hingga production-ready.
+
+### Status Keseluruhan
+
+```
+████████████████░░░░░░░░░░░░░░░░░░░░░░░░ 40%  (Tahap 1-4 selesai dari 10 tahap)
+```
+
+### Overview Tahap
+
+| Tahap | Nama | Status | Script | Deskripsi |
+|-------|------|--------|--------|-----------|
+| 1 | Update Sistem & Reboot | ✅ Selesai | `setup.sh` | Validasi OS, update sistem, reboot |
+| 2 | Install Dependencies & Setup | ✅ Selesai | `install.sh` | Instalasi paket, disable IPv6, setup direktori |
+| 3 | Domain, SSL, Nginx & Xray-core | ✅ Selesai | `setup-domain.sh` | Domain, SSL, reverse proxy, multi-protocol Xray |
+| 4 | SSH Tunneling, HAProxy & Services | ✅ Selesai | `setup-ssh.sh` | Dropbear, Stunnel, HAProxy, Squid, BadVPN, OHP |
+| 5 | Protokol Tambahan | 🔲 Belum | `setup-protocol.sh` | Hysteria2, Trojan-Go, OpenVPN, SoftEther, WARP |
+| 6 | Manajemen Akun & User | 🔲 Belum | `setup-account.sh` | CRUD akun per protokol, limit IP/quota, lock/ban |
+| 7 | Menu Sistem & CLI Dashboard | 🔲 Belum | `setup-menu.sh` | Menu utama, sub-menu protokol, command shortcut |
+| 8 | REST API & Bot Integrasi | 🔲 Belum | `setup-api.sh` | REST API port 9000, Telegram Bot, webhook |
+| 9 | Monitoring, Backup & Keamanan | 🔲 Belum | `setup-monitor.sh` | vnStat, Fail2ban lanjutan, Rclone, web panel |
+| 10 | Finalisasi & Produksi | 🔲 Belum | `setup-final.sh` | Integrasi, optimasi, auto-installer tunggal |
+
+---
+
+### Tahap 1: Update Sistem & Reboot ✅
+
+> **Script:** `setup.sh` (283 baris) — **SELESAI**
+
+Persiapan awal server: validasi environment dan update sistem operasi.
+
+**Komponen yang diimplementasikan:**
+
+- [x] Validasi root access
+- [x] Validasi OS (Ubuntu 20.04/22.04/24.04, Debian 10/11/12)
+- [x] Validasi arsitektur (x86_64 only)
+- [x] Validasi virtualisasi (KVM/Xen, tolak OpenVZ/LXC)
+- [x] Tambah group `dip` (PPP/networking)
+- [x] `apt-get update` dengan `--allow-releaseinfo-change`
+- [x] Reinstall GRUB bootloader
+- [x] `apt-get upgrade` dengan `--fix-missing`
+- [x] Update GRUB configuration
+- [x] Logging ke `/root/syslog.log`
+- [x] System reboot otomatis
+
+**Test:** `tests/test_setup.sh` — 30+ unit test ✅
+
+---
+
+### Tahap 2: Install Dependencies & Setup ✅
+
+> **Script:** `install.sh` (428 baris) — **SELESAI**
+
+Instalasi paket-paket dasar dan persiapan struktur direktori.
+
+**Komponen yang diimplementasikan:**
+
+- [x] Disable IPv6 global (persistent via `sysctl.d`)
+- [x] Install 12 dependencies: `whois bzip2 gzip coreutils wget screen nscd curl tmux gnupg perl dnsutils`
+- [x] Verifikasi paket kritikal (wget, curl, screen, tmux)
+- [x] Setup timezone Asia/Jakarta (GMT+7)
+- [x] Buat 13 direktori konfigurasi (`/etc/xray`, `/etc/hysteria2`, `/etc/trojan-go`, `/etc/nginx/conf.d`, `/etc/haproxy`, `/etc/openvpn`, `/etc/softether`, `/etc/stunnel`, `/etc/squid`, `/etc/fail2ban`, `/etc/warp`, `/etc/cron.d`, `/etc/vnstat`)
+- [x] Buat 3 direktori data (`/home/vps/public_html`, `/home/vps/backup`, `~/.config/rclone`)
+- [x] Simpan Cloudflare API Key (opsional, ke `/etc/xray/cloudflare`)
+- [x] Buat file domain placeholder (`/etc/xray/domain`)
+- [x] Logging lengkap ke `/root/syslog.log`
+
+**Test:** `tests/test_install.sh` — 65+ unit test ✅
+
+---
+
+### Tahap 3: Domain, SSL, Nginx & Xray-core ✅
+
+> **Script:** `setup-domain.sh` (1.437 baris) — **SELESAI**
+
+Setup domain, sertifikat SSL, reverse proxy Nginx, dan instalasi Xray-core multi-protocol.
+
+**Komponen yang diimplementasikan:**
+
+- [x] Validasi format domain (regex)
+- [x] Validasi DNS pointing (dig, bandingkan IP VPS)
+- [x] Auto-pointing domain via Cloudflare API v4
+- [x] Deteksi IP publik VPS (fallback: ifconfig.me → icanhazip.com)
+- [x] Install acme.sh + socat
+- [x] Issue SSL certificate (2 metode: Cloudflare DNS API → Standalone HTTP)
+- [x] Install & konfigurasi Nginx reverse proxy
+- [x] TLS termination di Nginx
+- [x] WebSocket proxy (HTTP/1.1 upgrade)
+- [x] gRPC proxy (HTTP/2)
+- [x] HTTP Upgrade support
+- [x] Install Xray-core binary
+- [x] Konfigurasi multi-protocol Xray (config.json):
+  - [x] VMess: WS TLS, WS Non-TLS, gRPC TLS, HTTP Upgrade
+  - [x] VLESS: WS TLS, WS Non-TLS, gRPC TLS, HTTP Upgrade
+  - [x] Trojan: WS TLS, WS Non-TLS, gRPC TLS, TCP TLS, HTTP Upgrade
+  - [x] Shadowsocks: WS TLS, WS Non-TLS, gRPC TLS, TCP Non-TLS
+  - [x] Socks: WS TLS, WS Non-TLS, gRPC TLS, TCP Non-TLS
+- [x] Buat systemd service untuk Xray
+- [x] Backend port routing (10001-10004)
+- [x] Default web page (index.html)
+
+**Test:** `tests/test_setup_domain.sh` — 100+ unit test ✅
+
+---
+
+### Tahap 4: SSH Tunneling, HAProxy & Services ✅
+
+> **Script:** `setup-ssh.sh` (1.240 baris) — **SELESAI**
+
+Instalasi SSH tunneling, load balancer, proxy services, dan UDP gateway.
+
+**Komponen yang diimplementasikan:**
+
+- [x] Validasi Tahap 3 selesai (cek domain, SSL, Nginx, Xray)
+- [x] Install & konfigurasi Dropbear SSH (port 80, 143, 443)
+- [x] Generate Dropbear host keys (RSA, ECDSA)
+- [x] Install & konfigurasi Stunnel4 SSL tunnel (port 446 SSH, port 445 SSH-WS)
+- [x] Buat SSH WebSocket handler (Python3, port 8880)
+- [x] Install & konfigurasi HAProxy load balancer (port 80, 443)
+- [x] Konfigurasi HAProxy SNI routing dan backend
+- [x] Install & konfigurasi Squid HTTP proxy (port 3128, 8080)
+- [x] Install BadVPN/UDPGW (port 7100-7900, 9 port)
+- [x] Install OHP — Open HTTP Puncher (SSH 2083, Dropbear 2084, OpenVPN 2087)
+- [x] Setup SSH/Dropbear banner
+- [x] Setup cronjob auto-clear-log (setiap 10 menit)
+- [x] Setup cronjob auto-delete-expired (template)
+- [x] Buat systemd service untuk semua komponen
+
+**Test:** `tests/test_setup_ssh.sh` — 120+ unit test ✅
+
+---
+
+### Tahap 5: Protokol Tambahan 🔲
+
+> **Script:** `setup-protocol.sh` — **BELUM DIMULAI**
+
+Instalasi protokol VPN/tunnel tambahan di luar Xray-core.
+
+**Komponen yang akan diimplementasikan:**
+
+- [ ] **Hysteria2** — Install binary, config QUIC/UDP (port random atau 80/443)
+- [ ] **Trojan-Go** — Install binary, config WebSocket TLS (port 80, 443)
+- [ ] **OpenVPN** — Install & konfigurasi server TCP (port 1194, 2294) dan UDP (port 2200, 2295)
+- [ ] **OpenVPN Stunnel** — TLS tunnel untuk OpenVPN (port 2296)
+- [ ] **SoftEther VPN** — Install & konfigurasi multi-protocol server (SSTP 4433, L2TP/IPSec 500/1701/4500, OpenVPN 1194/1195)
+- [ ] **Cloudflare WARP** — Install & konfigurasi WireGuard via Cloudflare (port 51820)
+- [ ] **SlowDNS/DNSTT** — Install & konfigurasi DNS tunneling (port 53, 5300, 2222)
+- [ ] **UDP Custom** — Handler UDP tunneling custom port (1-65535)
+- [ ] Buat systemd service untuk setiap protokol
+- [ ] Integrasi SSL certificate yang sudah ada
+
+**Test:** `tests/test_setup_protocol.sh`
+
+---
+
+### Tahap 6: Manajemen Akun & User 🔲
+
+> **Script:** `setup-account.sh` — **BELUM DIMULAI**
+
+Script manajemen akun untuk semua protokol. Setiap protokol memiliki operasi CRUD lengkap.
+
+**Komponen yang akan diimplementasikan:**
+
+- [ ] **Akun SSH** — Create, delete, extend, lock/unlock, ban/unban, cek login, limit IP
+- [ ] **Akun VMess** — Create (UUID), delete, extend, lock/unlock, ban/unban, limit IP, limit quota
+- [ ] **Akun VLESS** — Create (UUID), delete, extend, lock/unlock, ban/unban, limit IP, limit quota
+- [ ] **Akun Trojan** — Create (password), delete, extend, lock/unlock, ban/unban, limit IP, limit quota
+- [ ] **Akun Shadowsocks** — Create (password), delete, extend, lock/unlock, ban/unban, limit IP, limit quota
+- [ ] **Akun Socks** — Create (user/pass), delete, extend, lock/unlock, ban/unban, limit IP, limit quota
+- [ ] **Akun Hysteria2** — Create, delete, extend, lock/unlock, ban/unban, limit IP, limit quota
+- [ ] **Akun Trojan-Go** — Create, delete, extend, lock/unlock, ban/unban
+- [ ] **Bulk Create** — Buat banyak akun sekaligus (semua protokol)
+- [ ] **Recover Expired** — Pulihkan akun expired (Xray protocols)
+- [ ] **Expiry Checker** — Script `xp-ssh` dan `xp-xray` untuk cek masa aktif
+- [ ] **Auto Delete Expired** — Implementasi logika hapus akun expired (cronjob)
+- [ ] **Auto Disconnect Duplicate** — Disconnect session duplikat otomatis
+- [ ] **Bandwidth Per User** — Monitoring penggunaan bandwidth per akun
+- [ ] **Subscription Link Generator** — Generate link subscription untuk client app
+- [ ] **Clash Config Generator** — Auto generate Clash config per user
+- [ ] **VPNRay JSON Converter** — Converter config untuk custom HTTP
+
+**Test:** `tests/test_setup_account.sh`
+
+---
+
+### Tahap 7: Menu Sistem & CLI Dashboard 🔲
+
+> **Script:** `setup-menu.sh` — **BELUM DIMULAI**
+
+Instalasi menu interaktif CLI sebagai antarmuka utama pengguna.
+
+**Komponen yang akan diimplementasikan:**
+
+- [ ] **Menu Utama** (`/usr/local/bin/menu`) — Dashboard dengan box drawing dan warna
+- [ ] **Menu SSH & OpenVPN** (`menu-ssh`) — Manajemen akun SSH, OpenVPN
+- [ ] **Menu VMess** (`menu-vmess`) — Manajemen akun VMess
+- [ ] **Menu VLESS** (`menu-vless`) — Manajemen akun VLESS
+- [ ] **Menu Trojan** (`menu-trojan`) — Manajemen akun Trojan
+- [ ] **Menu Shadowsocks** (`menu-shadowsocks`) — Manajemen akun Shadowsocks
+- [ ] **Menu Socks** (`menu-socks`) — Manajemen akun Socks
+- [ ] **Menu Hysteria2** (`menu-hysteria2`) — Manajemen akun Hysteria2
+- [ ] **Menu Trojan-Go** (`menu-trojan-go`) — Manajemen akun Trojan-Go
+- [ ] **Menu SoftEther** (`menu-softether`) — Manajemen SoftEther VPN
+- [ ] **Menu WARP** (`menu-warp`) — Manajemen Cloudflare WARP
+- [ ] **Menu Backup** (`menu-backup`) — Backup & restore via Rclone
+- [ ] **Menu API** (`menu-api`) — Konfigurasi REST API
+- [ ] **Menu Bot** (`menu-bot`) — Konfigurasi Telegram Bot
+- [ ] **Menu System** (`menu-system`) — Settings sistem (reboot, timezone, banner, dll)
+- [ ] **Running Services** (`running`) — Cek status semua service
+- [ ] **Speedtest** (`speedtest`) — Speedtest by Ookla
+- [ ] **Bandwidth** (`vnstat`) — Monitor bandwidth
+- [ ] **Sub-Menu Protocol** — 14 operasi per protokol (create, delete, renew, lock, ban, dll)
+- [ ] **Auto-complete** — Registrasi command shortcut di `/usr/local/bin/`
+
+**Test:** `tests/test_setup_menu.sh`
+
+---
+
+### Tahap 8: REST API & Bot Integrasi 🔲
+
+> **Script:** `setup-api.sh` — **BELUM DIMULAI**
+
+REST API service dan integrasi Telegram Bot untuk remote management.
+
+**Komponen yang akan diimplementasikan:**
+
+- [ ] **REST API Service** (port 9000) — Lightweight API server
+- [ ] **API Authentication** — Token-based auth (Authorization header)
+- [ ] **Endpoint Akun** (per protokol: SSH, VMess, VLESS, Trojan, SS, Socks, Hysteria2, Trojan-Go):
+  - [ ] `POST /api/{protocol}/create` — Buat akun
+  - [ ] `DELETE /api/{protocol}/delete` — Hapus akun
+  - [ ] `GET /api/{protocol}/list` — List semua akun
+  - [ ] `GET /api/{protocol}/detail/{user}` — Detail akun
+  - [ ] `PUT /api/{protocol}/renew` — Perpanjang akun
+  - [ ] `PUT /api/{protocol}/lock` — Lock akun
+  - [ ] `PUT /api/{protocol}/unlock` — Unlock akun
+  - [ ] `PUT /api/{protocol}/ban` — Ban akun
+  - [ ] `PUT /api/{protocol}/unban` — Unban akun
+  - [ ] `PUT /api/{protocol}/limit-ip` — Set limit IP
+  - [ ] `PUT /api/{protocol}/limit-quota` — Set limit quota
+- [ ] **Endpoint Server**:
+  - [ ] `GET /api/server/status` — Status server
+  - [ ] `GET /api/server/bandwidth` — Bandwidth stats
+  - [ ] `GET /api/server/running` — Running services
+  - [ ] `POST /api/server/reboot` — Reboot server
+- [ ] **Endpoint Utilitas**:
+  - [ ] `POST /api/backup` — Backup ke cloud
+  - [ ] `POST /api/restore` — Restore dari cloud
+  - [ ] `GET /api/subscription/{user}` — Get subscription link
+  - [ ] `GET /api/clash/{user}` — Get Clash config
+- [ ] **Telegram Bot Remote** — CRUD akun, reboot, info server via bot
+- [ ] **Telegram Bot Seller Panel** — Panel penjualan otomatis
+- [ ] **Telegram Bot Notification** — Notifikasi akun dibuat/expired/login
+- [ ] **Webhook Integration** — Webhook untuk event sistem
+- [ ] Buat systemd service untuk API server
+
+**Test:** `tests/test_setup_api.sh`
+
+---
+
+### Tahap 9: Monitoring, Backup & Keamanan 🔲
+
+> **Script:** `setup-monitor.sh` — **BELUM DIMULAI**
+
+Monitoring bandwidth, backup otomatis, dan konfigurasi keamanan lanjutan.
+
+**Komponen yang akan diimplementasikan:**
+
+- [ ] **vnStat Monitoring** — Install & konfigurasi vnStat, web interface (port 8899)
+- [ ] **Fail2ban Lanjutan** — Konfigurasi jail SSH, Dropbear, Xray brute-force protection
+- [ ] **Firewall UFW/iptables** — Auto konfigurasi firewall rules
+- [ ] **Rclone Backup/Restore** — Setup Rclone, integrasi Google Drive/Dropbox/OneDrive
+- [ ] **Auto Backup** — Cronjob backup otomatis
+- [ ] **HideSSH Web Panel** — Web panel terintegrasi
+- [ ] **Webmin** — Web-based system admin panel
+- [ ] **SWAP Memory** — Otomatis setup swap file (1GB/2GB selectable)
+- [ ] **Auto Block Ads Indo** — Block iklan Indonesia via hosts file
+- [ ] **Domain Blacklist** — Block domain tertentu via Xray routing
+- [ ] **BT Download Block** — Blokir P2P/BitTorrent
+- [ ] **IP Whitelist/Blacklist** — Manajemen IP akses
+- [ ] **Service on Demand** — Service hanya berjalan jika ada akun aktif
+- [ ] **CPU & Memory Monitoring** — Monitor real-time penggunaan resource
+- [ ] **Log Rotation** — Konfigurasi logrotate untuk semua service
+
+**Test:** `tests/test_setup_monitor.sh`
+
+---
+
+### Tahap 10: Finalisasi & Produksi 🔲
+
+> **Script:** `setup-final.sh` — **BELUM DIMULAI**
+
+Integrasi semua komponen, optimasi, dan pembuatan auto-installer tunggal.
+
+**Komponen yang akan diimplementasikan:**
+
+- [ ] **Auto-Installer Tunggal** — Script tunggal yang menjalankan semua tahap secara berurutan
+- [ ] **Integrasi Antar Tahap** — Verifikasi setiap tahap selesai sebelum lanjut
+- [ ] **Error Recovery** — Resume dari tahap terakhir jika gagal/disconnect
+- [ ] **Post-Install Verification** — Cek semua service berjalan setelah instalasi
+- [ ] **System Info Display** — Tampilkan info lengkap VPS setelah install (IP, domain, port, dll)
+- [ ] **Uninstall Script** — Script untuk membersihkan semua komponen
+- [ ] **Rebuild Menu** — Rebuild VPS dari menu tanpa reinstall OS
+- [ ] **Performance Optimization** — Tuning kernel, network, dan service parameters
+- [ ] **Security Hardening** — Hardening SSH, disable unnecessary services
+- [ ] **Documentation Generator** — Auto-generate dokumentasi berdasarkan konfigurasi aktif
+- [ ] **Version Management** — Update checker dan auto-update script
+- [ ] **Full Integration Testing** — End-to-end test semua komponen
+- [ ] **Production Checklist** — Checklist verifikasi sebelum produksi
+
+**Test:** `tests/test_setup_final.sh`
+
+---
+
+### Timeline Estimasi
+
+```
+Tahap 1-4  : ████████████████████ 100%  ✅ Selesai (Infrastruktur dasar)
+Tahap 5    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 Protokol tambahan
+Tahap 6    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 Manajemen akun
+Tahap 7    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 Menu & CLI
+Tahap 8    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 API & Bot
+Tahap 9    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 Monitoring & Security
+Tahap 10   : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 Finalisasi
+```
+
+| Fase | Tahap | Estimasi | Prioritas |
+|------|-------|----------|-----------|
+| **Fase 1 — Infrastruktur** | Tahap 1-4 | ✅ Selesai | — |
+| **Fase 2 — Ekspansi Protokol** | Tahap 5 | 2-3 minggu | 🔴 Tinggi |
+| **Fase 3 — User Experience** | Tahap 6-7 | 3-4 minggu | 🔴 Tinggi |
+| **Fase 4 — Integrasi** | Tahap 8 | 2-3 minggu | 🟡 Sedang |
+| **Fase 5 — Hardening** | Tahap 9-10 | 3-4 minggu | 🟡 Sedang |
+
+> **Total estimasi:** 10-14 minggu untuk script production-ready
+
+---
+
+## 📝 Changelog
+
+### v0.4.0 — Tahap 4 (Current)
+- ✅ Dropbear SSH multi-port (80, 143, 443)
+- ✅ Stunnel4 SSL tunnel (port 446, 445)
+- ✅ SSH WebSocket handler (Python3, port 8880)
+- ✅ HAProxy load balancer (port 80, 443)
+- ✅ Squid HTTP proxy (port 3128, 8080)
+- ✅ BadVPN/UDPGW (port 7100-7900)
+- ✅ OHP — Open HTTP Puncher (port 2083, 2084, 2087)
+- ✅ SSH banner, cronjob templates
+
+### v0.3.0 — Tahap 3
+- ✅ Domain setup & DNS validation
+- ✅ Auto-pointing domain via Cloudflare API
+- ✅ SSL certificate via acme.sh (Cloudflare DNS + standalone)
+- ✅ Nginx reverse proxy (WebSocket, gRPC, HTTP Upgrade)
+- ✅ Xray-core multi-protocol (VMess, VLESS, Trojan, Shadowsocks, Socks)
+- ✅ Systemd service management
+
+### v0.2.0 — Tahap 2
+- ✅ Disable IPv6 (persistent)
+- ✅ 12 dependencies terinstall
+- ✅ 16 direktori konfigurasi & data
+- ✅ Timezone, Cloudflare API Key
+
+### v0.1.0 — Tahap 1
+- ✅ Validasi OS, arsitektur, virtualisasi
+- ✅ System update & reboot
+
+---
+
+## 📄 Lisensi
+
+```
+MIT License
+
+Copyright (c) 2024 kertasbaru
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
