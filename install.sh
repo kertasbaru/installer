@@ -1,9 +1,20 @@
 #!/bin/bash
 # ============================================================================
-# VPN Tunneling AutoScript Installer — Tahap 2: Install Dependencies & Setup
+# VPN Tunneling AutoScript Installer — Master Installer (Tahap 2-10)
 # ============================================================================
-# Script ini melakukan instalasi dependencies, disable IPv6, setup direktori,
-# dan konfigurasi awal untuk VPN Tunneling.
+# Script ini merupakan master installer yang menjalankan semua tahap instalasi
+# secara berurutan (Tahap 2 hingga Tahap 10).
+#
+# Tahap yang dijalankan:
+#   Tahap 2  : Install Dependencies & Setup (built-in)
+#   Tahap 3  : Domain, SSL, Nginx & Xray-core (setup-domain.sh)
+#   Tahap 4  : SSH Tunneling, HAProxy & Services (setup-ssh.sh)
+#   Tahap 5  : Protokol Tambahan (setup-protocol.sh)
+#   Tahap 6  : Manajemen Akun & User (setup-account.sh)
+#   Tahap 7  : Menu Sistem & CLI Dashboard (setup-menu.sh)
+#   Tahap 8  : REST API & Bot Integrasi (setup-api.sh)
+#   Tahap 9  : Monitoring, Backup & Keamanan (setup-monitor.sh)
+#   Tahap 10 : Finalisasi & Produksi (setup-final.sh)
 #
 # OS yang Didukung:
 #   - Ubuntu 20.04 LTS (focal)
@@ -17,12 +28,15 @@
 #   - Akses root
 #   - Arsitektur amd64 (64-bit)
 #   - Virtualisasi KVM / Xen
-#   - Tahap 1 (setup.sh) sudah dijalankan
+#   - Tahap 1 (setup.sh) sudah dijalankan & server sudah reboot
 #
 # Penggunaan:
 #   chmod +x install.sh
 #   ./install.sh                  # Tanpa Cloudflare API Key
 #   ./install.sh "CFAPIKEY"       # Dengan Cloudflare API Key
+#
+# Instalasi 1 baris (setelah Tahap 1 & reboot):
+#   wget -qO install.sh https://raw.githubusercontent.com/kertasbaru/installer/main/install.sh && chmod +x install.sh && screen -S setup bash install.sh
 #
 # Log instalasi tersimpan di: /root/syslog.log
 # ============================================================================
@@ -40,6 +54,22 @@ LOG_FILE="/root/syslog.log"
 
 # Cloudflare API Key (opsional, dari argumen pertama)
 CF_API_KEY="${1:-}"
+
+# Repository URL dan direktori kerja
+REPO_URL="https://raw.githubusercontent.com/kertasbaru/installer/main"
+SCRIPTS_DIR="/root/vpnray-installer"
+
+# Daftar setup scripts yang akan didownload dan dijalankan (Tahap 3-10)
+SETUP_SCRIPTS=(
+    "setup-domain.sh"
+    "setup-ssh.sh"
+    "setup-protocol.sh"
+    "setup-account.sh"
+    "setup-menu.sh"
+    "setup-api.sh"
+    "setup-monitor.sh"
+    "setup-final.sh"
+)
 
 # Daftar dependencies yang dibutuhkan
 DEPENDENCIES=(
@@ -362,6 +392,105 @@ setup_domain_file() {
 }
 
 # ============================================================================
+# Download Setup Scripts
+# ============================================================================
+
+download_scripts() {
+    log "Mendownload setup scripts dari repository..."
+
+    mkdir -p "$SCRIPTS_DIR"
+
+    local failed=false
+    for script in "${SETUP_SCRIPTS[@]}"; do
+        log "Mendownload $script..."
+        if ! wget --inet4-only --no-check-certificate -q -O "$SCRIPTS_DIR/$script" "$REPO_URL/$script"; then
+            log_error "Gagal mendownload $script dari $REPO_URL/$script"
+            failed=true
+        else
+            chmod +x "$SCRIPTS_DIR/$script"
+            log "$script berhasil didownload."
+        fi
+    done
+
+    if [[ "$failed" == true ]]; then
+        log_error "Beberapa script gagal didownload. Periksa koneksi internet."
+        exit 1
+    fi
+
+    log "Semua setup scripts berhasil didownload ke $SCRIPTS_DIR"
+}
+
+# ============================================================================
+# Jalankan Semua Tahap (Tahap 3-10)
+# ============================================================================
+
+run_all_stages() {
+    log "Memulai instalasi Tahap 3-10..."
+
+    # Tahap 3: Domain, SSL, Nginx & Xray-core (membutuhkan input domain)
+    echo ""
+    echo -e "${CYAN}=============================================="
+    echo "  Tahap 3: Domain, SSL, Nginx & Xray-core"
+    echo -e "==============================================${NC}"
+    echo ""
+
+    local domain=""
+    if [[ -f /etc/xray/domain ]] && [[ -s /etc/xray/domain ]]; then
+        domain=$(cat /etc/xray/domain)
+        log "Domain ditemukan dari konfigurasi: $domain"
+    fi
+
+    if [[ -z "$domain" ]]; then
+        read -rp "Masukkan domain (contoh: vpn.example.com): " domain
+        if [[ -z "$domain" ]]; then
+            log_error "Domain tidak boleh kosong!"
+            exit 1
+        fi
+    fi
+
+    log "Menjalankan setup-domain.sh dengan domain: $domain"
+    if ! bash "$SCRIPTS_DIR/setup-domain.sh" "$domain" "$CF_API_KEY"; then
+        log_error "Tahap 3 (setup-domain.sh) gagal!"
+        exit 1
+    fi
+    log "Tahap 3 selesai."
+
+    # Tahap 4-10: Jalankan sisa scripts secara berurutan
+    local tahap=4
+    local tahap_names=(
+        "SSH Tunneling, HAProxy & Services"
+        "Protokol Tambahan"
+        "Manajemen Akun & User"
+        "Menu Sistem & CLI Dashboard"
+        "REST API & Bot Integrasi"
+        "Monitoring, Backup & Keamanan"
+        "Finalisasi & Produksi"
+    )
+
+    for i in "${!tahap_names[@]}"; do
+        local script="${SETUP_SCRIPTS[$((i + 1))]}"
+        local name="${tahap_names[$i]}"
+
+        echo ""
+        echo -e "${CYAN}=============================================="
+        echo "  Tahap $tahap: $name"
+        echo -e "==============================================${NC}"
+        echo ""
+
+        log "Menjalankan $script (Tahap $tahap: $name)..."
+        if ! bash "$SCRIPTS_DIR/$script"; then
+            log_error "Tahap $tahap ($script) gagal!"
+            exit 1
+        fi
+        log "Tahap $tahap selesai."
+
+        ((tahap++))
+    done
+
+    log "Semua tahap (3-10) berhasil dijalankan!"
+}
+
+# ============================================================================
 # Main
 # ============================================================================
 
@@ -406,7 +535,7 @@ main() {
     # Setup domain file
     setup_domain_file
 
-    # Selesai
+    # Selesai Tahap 2
     echo ""
     echo -e "${GREEN}=============================================="
     echo "  Tahap 2 selesai!"
@@ -418,11 +547,29 @@ main() {
         echo "  Cloudflare API Key berhasil disimpan."
     fi
     echo ""
-    echo "  Sistem siap untuk instalasi komponen VPN."
+    echo "  Melanjutkan ke Tahap 3-10..."
     echo -e "==============================================${NC}"
     echo ""
 
     log "Tahap 2 selesai. Sistem siap untuk instalasi komponen VPN."
+
+    # Download setup scripts (Tahap 3-10) dari repository
+    download_scripts
+
+    # Jalankan semua tahap (3-10)
+    run_all_stages
+
+    # Selesai — Semua tahap berhasil
+    echo ""
+    echo -e "${GREEN}=============================================="
+    echo "  ✅ INSTALASI SELESAI! (Tahap 2-10)"
+    echo ""
+    echo "  Semua komponen VPN berhasil diinstall."
+    echo "  Ketik 'menu' untuk membuka dashboard."
+    echo -e "==============================================${NC}"
+    echo ""
+
+    log "Instalasi lengkap selesai (Tahap 2-10)."
 }
 
 main "$@"

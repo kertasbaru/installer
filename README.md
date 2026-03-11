@@ -629,7 +629,37 @@ Path without Query (Clash compatible):
 
 ## 🚀 Instalasi
 
-### Tahap 1: Update Sistem & Reboot
+### ⚡ Instalasi Cepat (2 Langkah)
+
+**Langkah 1** — Update sistem & reboot (jalankan sekali di VPS baru):
+
+```bash
+apt-get update -y && apt-get upgrade -y --fix-missing && reboot
+```
+
+**Langkah 2** — Setelah reboot, jalankan 1 baris ini untuk instalasi lengkap (Tahap 2-10):
+
+```bash
+wget -qO install.sh https://raw.githubusercontent.com/kertasbaru/installer/main/install.sh && chmod +x install.sh && screen -S setup bash install.sh
+```
+
+> Script akan otomatis mendownload dan menjalankan semua tahap (Tahap 2-10) secara berurutan. Anda hanya perlu memasukkan **domain** saat diminta.
+
+#### Dengan Cloudflare API Key Pribadi
+
+```bash
+wget -qO install.sh https://raw.githubusercontent.com/kertasbaru/installer/main/install.sh && chmod +x install.sh && screen -S setup bash install.sh "CFAPIKEY"
+```
+
+> Ganti `CFAPIKEY` dengan API Key Cloudflare milikmu.
+
+---
+
+### 📋 Instalasi Manual (Langkah demi Langkah)
+
+Jika ingin menjalankan tiap tahap secara manual:
+
+#### Tahap 1: Update Sistem & Reboot
 
 ```bash
 export DEBIAN_FRONTEND=noninteractive
@@ -642,7 +672,9 @@ sleep 2 && \
 reboot
 ```
 
-### Tahap 2: Install Dependencies & Jalankan Installer
+#### Tahap 2-10: Jalankan Master Installer
+
+Setelah reboot, jalankan:
 
 ```bash
 export DEBIAN_FRONTEND=noninteractive
@@ -651,25 +683,9 @@ sysctl -w net.ipv6.conf.all.disable_ipv6=1 && \
 sysctl -w net.ipv6.conf.default.disable_ipv6=1 && \
 apt-get update && \
 apt-get --reinstall --fix-missing install -y whois bzip2 gzip coreutils wget screen nscd curl tmux gnupg perl dnsutils && \
-wget --inet4-only --no-check-certificate -O setup.sh "https://raw.githubusercontent.com/kertasbaru/autoscript/main/install.sh" && \
-chmod +x setup.sh && \
-screen -S setup ./setup.sh
-```
-
-### Tahap 2 (Alternatif): Menggunakan Cloudflare API Key Pribadi
-
-```bash
-export DEBIAN_FRONTEND=noninteractive
-source /etc/os-release
-sysctl -w net.ipv6.conf.all.disable_ipv6=1 && \
-sysctl -w net.ipv6.conf.default.disable_ipv6=1 && \
-apt-get update && \
-apt-get --reinstall --fix-missing install -y whois bzip2 gzip coreutils wget screen nscd curl tmux gnupg perl dnsutils && \
-wget --inet4-only --no-check-certificate -O setup.sh "https://raw.githubusercontent.com/kertasbaru/autoscript/main/install.sh" && \
-chmod +x setup.sh && \
-screen -S setup ./setup.sh "CFAPIKEY"
-
-# Ganti CFAPIKEY dengan API Key Cloudflare milikmu
+wget --inet4-only --no-check-certificate -O install.sh "https://raw.githubusercontent.com/kertasbaru/installer/main/install.sh" && \
+chmod +x install.sh && \
+screen -S setup ./install.sh
 ```
 
 #### Cara Membuat Cloudflare API Key
@@ -1111,7 +1127,7 @@ Roadmap pengembangan script installer dari tahap awal hingga production-ready.
 | Tahap | Nama | Status | Script | Deskripsi |
 |-------|------|--------|--------|-----------|
 | 1 | Update Sistem & Reboot | ✅ Selesai | `setup.sh` | Validasi OS, update sistem, reboot |
-| 2 | Install Dependencies & Setup | ✅ Selesai | `install.sh` | Instalasi paket, disable IPv6, setup direktori |
+| 2 | Install Dependencies & Setup | ✅ Selesai | `install.sh` | **Master installer**: dependencies, setup direktori, lalu menjalankan Tahap 3-10 |
 | 3 | Domain, SSL, Nginx & Xray-core | ✅ Selesai | `setup-domain.sh` | Domain, SSL, reverse proxy, multi-protocol Xray |
 | 4 | SSH Tunneling, HAProxy & Services | ✅ Selesai | `setup-ssh.sh` | Dropbear, Stunnel, HAProxy, Squid, BadVPN, OHP |
 | 5 | Protokol Tambahan | ✅ Selesai | `setup-protocol.sh` | Hysteria2, Trojan-Go, OpenVPN, SoftEther, WARP |
@@ -1149,9 +1165,9 @@ Persiapan awal server: validasi environment dan update sistem operasi.
 
 ### Tahap 2: Install Dependencies & Setup ✅
 
-> **Script:** `install.sh` (428 baris) — **SELESAI**
+> **Script:** `install.sh` — **Master Installer (Tahap 2-10)** — **SELESAI**
 
-Instalasi paket-paket dasar dan persiapan struktur direktori.
+Instalasi paket-paket dasar, persiapan struktur direktori, lalu mendownload dan menjalankan semua setup scripts (Tahap 3-10) secara berurutan.
 
 **Komponen yang diimplementasikan:**
 
@@ -1163,6 +1179,9 @@ Instalasi paket-paket dasar dan persiapan struktur direktori.
 - [x] Buat 3 direktori data (`/home/vps/public_html`, `/home/vps/backup`, `~/.config/rclone`)
 - [x] Simpan Cloudflare API Key (opsional, ke `/etc/xray/cloudflare`)
 - [x] Buat file domain placeholder (`/etc/xray/domain`)
+- [x] Download semua setup scripts (Tahap 3-10) dari repository
+- [x] Jalankan `setup-domain.sh` → `setup-ssh.sh` → `setup-protocol.sh` → `setup-account.sh` → `setup-menu.sh` → `setup-api.sh` → `setup-monitor.sh` → `setup-final.sh`
+- [x] Error handling per tahap dengan logging
 - [x] Logging lengkap ke `/root/syslog.log`
 
 **Test:** `tests/test_install.sh` — 65+ unit test ✅
