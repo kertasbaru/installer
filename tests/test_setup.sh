@@ -15,10 +15,12 @@ SCRIPT_PATH="$SCRIPT_DIR/setup.sh"
 
 PASS=0
 FAIL=0
+SKIP=0
 
 # Warna
 RED='\033[0;31m'
 GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
 NC='\033[0m'
 
 assert_eq() {
@@ -244,7 +246,8 @@ if command -v shellcheck &>/dev/null; then
         assert_eq "$test_name" "true" "false"
     fi
 else
-    echo -e "${GREEN}[SKIP]${NC} $test_name (shellcheck not installed)"
+    echo -e "${YELLOW}[SKIP]${NC} $test_name (shellcheck not installed)"
+    ((SKIP++))
 fi
 
 # ---- Test 28: Script uses --allow-releaseinfo-change flag ----
@@ -274,7 +277,7 @@ fi
 # ---- Hasil ----
 echo ""
 echo "=============================================="
-echo "  Hasil: $PASS passed, $FAIL failed"
+echo "  Hasil: $PASS passed, $FAIL failed, $SKIP skipped"
 echo "=============================================="
 
 if [[ "$FAIL" -gt 0 ]]; then
