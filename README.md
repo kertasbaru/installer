@@ -1055,4 +1055,126 @@ Script ini dikembangkan dengan referensi dan inspirasi dari repository-repositor
 | [SoftEtherVPN/SoftEtherVPN](https://github.com/SoftEtherVPN/SoftEtherVPN) | SoftEther VPN server |
 | [mack-a/v2ray-agent](https://github.com/mack-a/v2ray-agent) | 8-in-1 Xray/Hysteria2/sing-box script |
 | [FN-Rerechan02/Autoscript](https://github.com/FN-Rerechan02/Autoscript) | AIO VPN (SSH, Xray, UDP, OHP, Argo) |
-| [GegeDevs/sshvpn-script](https://github.com/GegeDevs/sshvpn-script) | SSH
+| [GegeDevs/sshvpn-script](https://github.com/GegeDevs/sshvpn-script) | SSH VPN Script |
+
+---
+
+## 🗺️ Roadmap
+
+Berikut adalah tahapan rencana pembuatan script installer:
+
+### Tahap 1 — Persiapan & Struktur Dasar
+
+- [ ] Merancang struktur direktori project (`/etc/`, `/usr/local/bin/`, `/home/vps/`)
+- [ ] Membuat script `install.sh` sebagai entry point utama installer
+- [ ] Membuat fungsi deteksi OS (Ubuntu/Debian) dan validasi versi
+- [ ] Membuat fungsi pengecekan persyaratan sistem (RAM, CPU, Virtualisasi)
+- [ ] Setup environment variables dan file konfigurasi dasar
+- [ ] Implementasi logging system (`/root/syslog.log`)
+
+### Tahap 2 — Instalasi Dependensi & Komponen Inti
+
+- [ ] Instalasi dependensi dasar (curl, wget, screen, gnupg, dll)
+- [ ] Setup Nginx sebagai reverse proxy & TLS termination
+- [ ] Setup HAProxy untuk load balancing port 80/443
+- [ ] Implementasi auto-install SSL certificate (Certbot/Acme.sh)
+- [ ] Integrasi Cloudflare API untuk pointing domain otomatis
+- [ ] Setup firewall rules (iptables/ufw)
+
+### Tahap 3 — SSH Tunneling & Proxy
+
+- [ ] Setup OpenSSH & Dropbear SSH server
+- [ ] Implementasi SSH WebSocket (TLS & Non-TLS)
+- [ ] Setup Stunnel untuk SSH over SSL/TLS
+- [ ] Implementasi SlowDNS/DNSTT untuk DNS tunneling
+- [ ] Setup Squid HTTP Proxy & Socks5 Proxy (Dante)
+- [ ] Implementasi OHP (Open HTTP Puncher)
+
+### Tahap 4 — Xray-core Multi Protocol
+
+- [ ] Instalasi Xray-core (versi terbaru)
+- [ ] Konfigurasi VMess (WS TLS, WS Non-TLS, gRPC, HTTP Upgrade)
+- [ ] Konfigurasi VLESS (WS TLS, WS Non-TLS, gRPC, HTTP Upgrade)
+- [ ] Konfigurasi Trojan (WS TLS, WS Non-TLS, gRPC, HTTP Upgrade, TCP TLS)
+- [ ] Konfigurasi Shadowsocks (WS TLS, WS Non-TLS, gRPC, TCP)
+- [ ] Konfigurasi Socks (WS TLS, WS Non-TLS, gRPC, TCP)
+- [ ] Setup path routing WebSocket & gRPC
+
+### Tahap 5 — Protokol Tambahan
+
+- [ ] Instalasi & konfigurasi Hysteria2 (QUIC/UDP)
+- [ ] Instalasi & konfigurasi Trojan-Go
+- [ ] Instalasi & konfigurasi OpenVPN (TCP, UDP, TLS)
+- [ ] Instalasi & konfigurasi SoftEther VPN (SSTP, L2TP, IPSec)
+- [ ] Setup BadVPN/UDPGW (port 7100-7900)
+- [ ] Setup UDP Custom & UDP Request
+- [ ] Integrasi Cloudflare WARP (WireGuard)
+- [ ] Setup Cloudflare Argo Tunnel
+
+### Tahap 6 — Sistem Manajemen Akun
+
+- [ ] Membuat script CRUD akun untuk semua protokol (SSH, VMess, VLESS, Trojan, Shadowsocks, Socks, Hysteria2)
+- [ ] Implementasi trial account dengan auto-expired
+- [ ] Implementasi multi-login limiter
+- [ ] Setup auto-delete akun expired
+- [ ] Setup auto-disable & auto-enable akun
+- [ ] Implementasi monitoring login & traffic per akun
+- [ ] Membuat subscription link generator
+- [ ] Auto generate Clash config
+
+### Tahap 7 — Keamanan
+
+- [ ] Implementasi Fail2ban untuk brute-force protection
+- [ ] Setup auto-block IP (torrent, abuse)
+- [ ] Implementasi anti-DDoS & rate limiting
+- [ ] Setup port knocking & whitelisting
+- [ ] Implementasi password hashing untuk akun
+- [ ] Setup firewall management dari menu
+
+### Tahap 8 — Monitoring & Logging
+
+- [ ] Instalasi & konfigurasi vnStat untuk traffic monitoring
+- [ ] Setup vnStat web interface
+- [ ] Implementasi real-time bandwidth monitoring per akun
+- [ ] Membuat system resource dashboard (RAM, CPU, Disk, Uptime)
+- [ ] Implementasi notifikasi otomatis saat akun dibuat/expired
+- [ ] Setup log rotation & management
+
+### Tahap 9 — Bot, Panel & Integrasi API
+
+- [ ] Membuat REST API service (port 9000) dengan autentikasi API Key
+- [ ] Implementasi endpoint API untuk semua operasi akun
+- [ ] Membuat Telegram Bot untuk remote management
+- [ ] Membuat Telegram Bot seller panel
+- [ ] Implementasi notifikasi Telegram otomatis
+- [ ] Setup HideSSH web panel
+- [ ] Setup Webmin admin panel
+
+### Tahap 10 — Backup, Restore & Optimasi
+
+- [ ] Integrasi Rclone untuk backup ke cloud storage (Google Drive, Dropbox, dll)
+- [ ] Implementasi auto-backup terjadwal
+- [ ] Membuat fitur restore dari backup
+- [ ] Optimasi performa server (sysctl tuning, resource management)
+- [ ] Implementasi service on demand (hemat resource)
+- [ ] Setup auto-reboot terjadwal
+- [ ] Implementasi swap management
+
+### Tahap 11 — Menu CLI & User Interface
+
+- [ ] Membuat menu utama interaktif dengan box drawing & warna
+- [ ] Membuat sub-menu untuk setiap protokol
+- [ ] Membuat command shortcut untuk akses cepat
+- [ ] Implementasi ON/OFF service menu
+- [ ] Membuat info system dashboard di menu utama
+
+### Tahap 12 — Testing, Dokumentasi & Rilis
+
+- [ ] Testing seluruh fitur di Ubuntu 20.04, 22.04, 24.04
+- [ ] Testing seluruh fitur di Debian 10, 11, 12
+- [ ] Testing kompatibilitas dengan berbagai provider VPS
+- [ ] Penulisan dokumentasi lengkap (README, FAQ, Troubleshooting)
+- [ ] Pembuatan changelog & versioning
+- [ ] Rilis versi stabil
+
+---
