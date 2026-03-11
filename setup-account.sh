@@ -50,7 +50,7 @@ LOG_FILE="/root/syslog.log"
 # Paths penting dari Tahap sebelumnya
 # ============================================================================
 XRAY_CERT="/etc/xray/xray.crt"
-XRAY_KEY="/etc/xray/xray.key"
+export XRAY_KEY="/etc/xray/xray.key"
 DOMAIN_FILE="/etc/xray/domain"
 XRAY_CONFIG="/etc/xray/config.json"
 HYSTERIA2_CONFIG="/etc/hysteria2/config.yaml"

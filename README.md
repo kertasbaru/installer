@@ -1218,31 +1218,31 @@ Instalasi protokol VPN/tunnel tambahan di luar Xray-core.
 
 ---
 
-### Tahap 6: Manajemen Akun & User 🔲
+### Tahap 6: Manajemen Akun & User ✅
 
-> **Script:** `setup-account.sh` — **BELUM DIMULAI**
+> **Script:** `setup-account.sh` — **2.568 baris** | **179 tests**
 
 Script manajemen akun untuk semua protokol. Setiap protokol memiliki operasi CRUD lengkap.
 
-**Komponen yang akan diimplementasikan:**
+**Komponen yang diimplementasikan:**
 
-- [ ] **Akun SSH** — Create, delete, extend, lock/unlock, ban/unban, cek login, limit IP
-- [ ] **Akun VMess** — Create (UUID), delete, extend, lock/unlock, ban/unban, limit IP, limit quota
-- [ ] **Akun VLESS** — Create (UUID), delete, extend, lock/unlock, ban/unban, limit IP, limit quota
-- [ ] **Akun Trojan** — Create (password), delete, extend, lock/unlock, ban/unban, limit IP, limit quota
-- [ ] **Akun Shadowsocks** — Create (password), delete, extend, lock/unlock, ban/unban, limit IP, limit quota
-- [ ] **Akun Socks** — Create (user/pass), delete, extend, lock/unlock, ban/unban, limit IP, limit quota
-- [ ] **Akun Hysteria2** — Create, delete, extend, lock/unlock, ban/unban, limit IP, limit quota
-- [ ] **Akun Trojan-Go** — Create, delete, extend, lock/unlock, ban/unban
-- [ ] **Bulk Create** — Buat banyak akun sekaligus (semua protokol)
-- [ ] **Recover Expired** — Pulihkan akun expired (Xray protocols)
-- [ ] **Expiry Checker** — Script `xp-ssh` dan `xp-xray` untuk cek masa aktif
-- [ ] **Auto Delete Expired** — Implementasi logika hapus akun expired (cronjob)
-- [ ] **Auto Disconnect Duplicate** — Disconnect session duplikat otomatis
-- [ ] **Bandwidth Per User** — Monitoring penggunaan bandwidth per akun
-- [ ] **Subscription Link Generator** — Generate link subscription untuk client app
-- [ ] **Clash Config Generator** — Auto generate Clash config per user
-- [ ] **VPNRay JSON Converter** — Converter config untuk custom HTTP
+- [x] **Akun SSH** — Create, delete, extend, lock/unlock, ban/unban, cek login, limit IP
+- [x] **Akun VMess** — Create (UUID), delete, extend, lock/unlock, ban/unban, limit IP, limit quota
+- [x] **Akun VLESS** — Create (UUID), delete, extend, lock/unlock, ban/unban, limit IP, limit quota
+- [x] **Akun Trojan** — Create (password), delete, extend, lock/unlock, ban/unban, limit IP, limit quota
+- [x] **Akun Shadowsocks** — Create (password), delete, extend, lock/unlock, ban/unban, limit IP, limit quota
+- [x] **Akun Socks** — Create (user/pass), delete, extend, lock/unlock, ban/unban, limit IP, limit quota
+- [x] **Akun Hysteria2** — Create, delete, extend, lock/unlock, ban/unban, limit IP, limit quota
+- [x] **Akun Trojan-Go** — Create, delete, extend, lock/unlock, ban/unban
+- [x] **Bulk Create** — Buat banyak akun sekaligus (semua protokol)
+- [x] **Recover Expired** — Pulihkan akun expired (Xray protocols)
+- [x] **Expiry Checker** — Script `xp-ssh` dan `xp-xray` untuk cek masa aktif
+- [x] **Auto Delete Expired** — Implementasi logika hapus akun expired (cronjob)
+- [x] **Auto Disconnect Duplicate** — Disconnect session duplikat otomatis
+- [x] **Bandwidth Per User** — Monitoring penggunaan bandwidth per akun
+- [x] **Subscription Link Generator** — Generate link subscription untuk client app
+- [x] **Clash Config Generator** — Auto generate Clash config per user
+- [x] **VPNRay JSON Converter** — Converter config untuk custom HTTP
 
 **Test:** `tests/test_setup_account.sh`
 
@@ -1380,8 +1380,7 @@ Integrasi semua komponen, optimasi, dan pembuatan auto-installer tunggal.
 ### Timeline Estimasi
 
 ```
-Tahap 1-5  : ████████████████████████ 100%  ✅ Selesai (Infrastruktur + Protokol)
-Tahap 6    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 Manajemen akun
+Tahap 1-6  : ████████████████████████████  100%  ✅ Selesai (Infrastruktur + Protokol + Akun)
 Tahap 7    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 Menu & CLI
 Tahap 8    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 API & Bot
 Tahap 9    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 Monitoring & Security
@@ -1392,7 +1391,7 @@ Tahap 10   : ░░░░░░░░░░░░░░░░░░░░   0%  
 |------|-------|----------|-----------|
 | **Fase 1 — Infrastruktur** | Tahap 1-4 | ✅ Selesai | — |
 | **Fase 2 — Ekspansi Protokol** | Tahap 5 | ✅ Selesai | — |
-| **Fase 3 — User Experience** | Tahap 6-7 | 3-4 minggu | 🔴 Tinggi |
+| **Fase 3 — User Experience** | Tahap 6-7 | 🟡 Tahap 6 Selesai | 🔴 Tinggi |
 | **Fase 4 — Integrasi** | Tahap 8 | 2-3 minggu | 🟡 Sedang |
 | **Fase 5 — Hardening** | Tahap 9-10 | 3-4 minggu | 🟡 Sedang |
 
@@ -1402,7 +1401,28 @@ Tahap 10   : ░░░░░░░░░░░░░░░░░░░░   0%  
 
 ## 📝 Changelog
 
-### v0.5.0 — Tahap 5 (Current)
+### v0.6.0 — Tahap 6 (Current)
+- ✅ SSH account management (create, delete, extend, lock/unlock, ban/unban, cek login, limit IP)
+- ✅ VMess account management (UUID, CRUD, lock, ban, limit IP/quota)
+- ✅ VLESS account management (UUID, CRUD, lock, ban, limit IP/quota)
+- ✅ Trojan account management (password, CRUD, lock, ban, limit IP/quota)
+- ✅ Shadowsocks account management (password + chacha20-ietf-poly1305, CRUD)
+- ✅ Socks account management (user/pass, CRUD, lock, ban, limit IP/quota)
+- ✅ Hysteria2 account management (YAML config, CRUD, limit IP/quota)
+- ✅ Trojan-Go account management (JSON config, CRUD, lock/ban)
+- ✅ Bulk create accounts (semua protokol, 1-1000 akun)
+- ✅ Recover expired accounts (auto re-activate)
+- ✅ Expiry checker scripts (xp-ssh, xp-xray)
+- ✅ Auto delete expired accounts (cronjob harian)
+- ✅ Auto disconnect duplicate sessions (cronjob 5 menit)
+- ✅ Bandwidth per user monitoring (Xray API stats)
+- ✅ Subscription link generator (vmess://, vless://, trojan://)
+- ✅ Clash YAML config generator
+- ✅ VPNRay JSON converter
+- ✅ Utility scripts: limit-ip-ssh, limit-ip-xray, limit-quota-xray, lock-ssh, lock-xray
+- ✅ Account data stored as JSON di /etc/vpnray/accounts/
+
+### v0.5.0 — Tahap 5
 - ✅ Hysteria2 QUIC/UDP (port 443) — binary dari apernet/hysteria
 - ✅ Trojan-Go WebSocket TLS (port 443) — binary dari p4gefau1t/trojan-go
 - ✅ OpenVPN TCP (port 1194, 2294) dan UDP (port 2200, 2295)
