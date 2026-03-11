@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2001,SC2002,SC2155
 # ============================================================================
 # VPN Tunneling AutoScript Installer — Tahap 8: REST API & Bot Integrasi
 # ============================================================================
@@ -41,6 +42,7 @@
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+# shellcheck disable=SC2034
 BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
@@ -53,10 +55,13 @@ LOG_FILE="/root/syslog.log"
 # ============================================================================
 DOMAIN_FILE="/etc/xray/domain"
 XRAY_CONFIG="/etc/xray/config.json"
+# shellcheck disable=SC2034
 XRAY_CERT="/etc/xray/xray.crt"
 # shellcheck disable=SC2034
 XRAY_KEY="/etc/xray/xray.key"
+# shellcheck disable=SC2034
 HYSTERIA2_CONFIG="/etc/hysteria2/config.yaml"
+# shellcheck disable=SC2034
 TROJAN_GO_CONFIG="/etc/trojan-go/config.json"
 
 # ============================================================================
@@ -383,7 +388,8 @@ api_create_account() {
     ip_limit=${ip_limit:-2}
     local created expired
     created=$(date '+%Y-%m-%d')
-    expired=$(date -d "+${exp} days" '+%Y-%m-%d' 2>/dev/null || date -v+${exp}d '+%Y-%m-%d' 2>/dev/null || echo "2026-04-10")
+    # shellcheck disable=SC2086
+    expired=$(date -d "+${exp} days" '+%Y-%m-%d' 2>/dev/null || date -v+"${exp}"d '+%Y-%m-%d' 2>/dev/null || echo "2026-04-10")
     case "$protocol" in
         ssh)
             password=$(parse_json_field "$body" "password")
@@ -508,7 +514,8 @@ api_renew_account() {
     days=$(parse_json_field_num "$body" "days")
     days=${days:-30}
     local new_expired
-    new_expired=$(date -d "+${days} days" '+%Y-%m-%d' 2>/dev/null || date -v+${days}d '+%Y-%m-%d' 2>/dev/null || echo "2026-04-10")
+    # shellcheck disable=SC2086
+    new_expired=$(date -d "+${days} days" '+%Y-%m-%d' 2>/dev/null || date -v+"${days}"d '+%Y-%m-%d' 2>/dev/null || echo "2026-04-10")
     local data
     data=$(cat "$acct_dir/$username.json")
     data=$(echo "$data" | sed "s/\"expired\":\"[^\"]*\"/\"expired\":\"$new_expired\"/")

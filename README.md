@@ -1066,7 +1066,7 @@ Roadmap pengembangan script installer dari tahap awal hingga production-ready.
 ### Status Keseluruhan
 
 ```
-████████████████████████████████░░░░░░░░ 70%  (Tahap 1-7 selesai dari 10 tahap)
+████████████████████████████████████████ 90%  (Tahap 1-9 selesai dari 10 tahap)
 ```
 
 ### Overview Tahap
@@ -1080,8 +1080,8 @@ Roadmap pengembangan script installer dari tahap awal hingga production-ready.
 | 5 | Protokol Tambahan | ✅ Selesai | `setup-protocol.sh` | Hysteria2, Trojan-Go, OpenVPN, SoftEther, WARP |
 | 6 | Manajemen Akun & User | ✅ Selesai | `setup-account.sh` | CRUD akun per protokol, limit IP/quota, lock/ban |
 | 7 | Menu Sistem & CLI Dashboard | ✅ Selesai | `setup-menu.sh` | Menu utama, sub-menu protokol, command shortcut |
-| 8 | REST API & Bot Integrasi | 🔲 Belum | `setup-api.sh` | REST API port 9000, Telegram Bot, webhook |
-| 9 | Monitoring, Backup & Keamanan | 🔲 Belum | `setup-monitor.sh` | vnStat, Fail2ban lanjutan, Rclone, web panel |
+| 8 | REST API & Bot Integrasi | ✅ Selesai | `setup-api.sh` | REST API port 9000, Telegram Bot, webhook |
+| 9 | Monitoring, Backup & Keamanan | ✅ Selesai | `setup-monitor.sh` | vnStat, Fail2ban lanjutan, Rclone, web panel |
 | 10 | Finalisasi & Produksi | 🔲 Belum | `setup-final.sh` | Integrasi, optimasi, auto-installer tunggal |
 
 ---
@@ -1281,71 +1281,71 @@ Instalasi menu interaktif CLI sebagai antarmuka utama pengguna.
 
 ---
 
-### Tahap 8: REST API & Bot Integrasi 🔲
+### Tahap 8: REST API & Bot Integrasi ✅
 
-> **Script:** `setup-api.sh` — **BELUM DIMULAI**
+> **Script:** `setup-api.sh` (1917 baris) — **SELESAI**
 
 REST API service dan integrasi Telegram Bot untuk remote management.
 
-**Komponen yang akan diimplementasikan:**
+**Komponen yang diimplementasikan:**
 
-- [ ] **REST API Service** (port 9000) — Lightweight API server
-- [ ] **API Authentication** — Token-based auth (Authorization header)
-- [ ] **Endpoint Akun** (per protokol: SSH, VMess, VLESS, Trojan, SS, Socks, Hysteria2, Trojan-Go):
-  - [ ] `POST /api/{protocol}/create` — Buat akun
-  - [ ] `DELETE /api/{protocol}/delete` — Hapus akun
-  - [ ] `GET /api/{protocol}/list` — List semua akun
-  - [ ] `GET /api/{protocol}/detail/{user}` — Detail akun
-  - [ ] `PUT /api/{protocol}/renew` — Perpanjang akun
-  - [ ] `PUT /api/{protocol}/lock` — Lock akun
-  - [ ] `PUT /api/{protocol}/unlock` — Unlock akun
-  - [ ] `PUT /api/{protocol}/ban` — Ban akun
-  - [ ] `PUT /api/{protocol}/unban` — Unban akun
-  - [ ] `PUT /api/{protocol}/limit-ip` — Set limit IP
-  - [ ] `PUT /api/{protocol}/limit-quota` — Set limit quota
-- [ ] **Endpoint Server**:
-  - [ ] `GET /api/server/status` — Status server
-  - [ ] `GET /api/server/bandwidth` — Bandwidth stats
-  - [ ] `GET /api/server/running` — Running services
-  - [ ] `POST /api/server/reboot` — Reboot server
-- [ ] **Endpoint Utilitas**:
-  - [ ] `POST /api/backup` — Backup ke cloud
-  - [ ] `POST /api/restore` — Restore dari cloud
-  - [ ] `GET /api/subscription/{user}` — Get subscription link
-  - [ ] `GET /api/clash/{user}` — Get Clash config
-- [ ] **Telegram Bot Remote** — CRUD akun, reboot, info server via bot
-- [ ] **Telegram Bot Seller Panel** — Panel penjualan otomatis
-- [ ] **Telegram Bot Notification** — Notifikasi akun dibuat/expired/login
-- [ ] **Webhook Integration** — Webhook untuk event sistem
-- [ ] Buat systemd service untuk API server
+- [x] **REST API Service** (port 9000) — Lightweight API server (socat-based)
+- [x] **API Authentication** — Token-based auth (Authorization header)
+- [x] **Endpoint Akun** (per protokol: SSH, VMess, VLESS, Trojan, SS, Socks, Hysteria2, Trojan-Go):
+  - [x] `POST /api/{protocol}/create` — Buat akun
+  - [x] `DELETE /api/{protocol}/delete` — Hapus akun
+  - [x] `GET /api/{protocol}/list` — List semua akun
+  - [x] `GET /api/{protocol}/detail/{user}` — Detail akun
+  - [x] `PUT /api/{protocol}/renew` — Perpanjang akun
+  - [x] `PUT /api/{protocol}/lock` — Lock akun
+  - [x] `PUT /api/{protocol}/unlock` — Unlock akun
+  - [x] `PUT /api/{protocol}/ban` — Ban akun
+  - [x] `PUT /api/{protocol}/unban` — Unban akun
+  - [x] `PUT /api/{protocol}/limit-ip` — Set limit IP
+  - [x] `PUT /api/{protocol}/limit-quota` — Set limit quota
+- [x] **Endpoint Server**:
+  - [x] `GET /api/server/status` — Status server
+  - [x] `GET /api/server/bandwidth` — Bandwidth stats
+  - [x] `GET /api/server/running` — Running services
+  - [x] `POST /api/server/reboot` — Reboot server
+- [x] **Endpoint Utilitas**:
+  - [x] `POST /api/backup` — Backup ke cloud
+  - [x] `POST /api/restore` — Restore dari cloud
+  - [x] `GET /api/subscription/{user}` — Get subscription link
+  - [x] `GET /api/clash/{user}` — Get Clash config
+- [x] **Telegram Bot Remote** — CRUD akun, reboot, info server via bot
+- [x] **Telegram Bot Seller Panel** — Panel penjualan otomatis
+- [x] **Telegram Bot Notification** — Notifikasi akun dibuat/expired/login
+- [x] **Webhook Integration** — Webhook untuk event sistem
+- [x] Buat systemd service untuk API server
 
 **Test:** `tests/test_setup_api.sh`
 
 ---
 
-### Tahap 9: Monitoring, Backup & Keamanan 🔲
+### Tahap 9: Monitoring, Backup & Keamanan ✅
 
-> **Script:** `setup-monitor.sh` — **BELUM DIMULAI**
+> **Script:** `setup-monitor.sh` (1749 baris) — **SELESAI**
 
 Monitoring bandwidth, backup otomatis, dan konfigurasi keamanan lanjutan.
 
-**Komponen yang akan diimplementasikan:**
+**Komponen yang diimplementasikan:**
 
-- [ ] **vnStat Monitoring** — Install & konfigurasi vnStat, web interface (port 8899)
-- [ ] **Fail2ban Lanjutan** — Konfigurasi jail SSH, Dropbear, Xray brute-force protection
-- [ ] **Firewall UFW/iptables** — Auto konfigurasi firewall rules
-- [ ] **Rclone Backup/Restore** — Setup Rclone, integrasi Google Drive/Dropbox/OneDrive
-- [ ] **Auto Backup** — Cronjob backup otomatis
-- [ ] **HideSSH Web Panel** — Web panel terintegrasi
-- [ ] **Webmin** — Web-based system admin panel
-- [ ] **SWAP Memory** — Otomatis setup swap file (1GB/2GB selectable)
-- [ ] **Auto Block Ads Indo** — Block iklan Indonesia via hosts file
-- [ ] **Domain Blacklist** — Block domain tertentu via Xray routing
-- [ ] **BT Download Block** — Blokir P2P/BitTorrent
-- [ ] **IP Whitelist/Blacklist** — Manajemen IP akses
-- [ ] **Service on Demand** — Service hanya berjalan jika ada akun aktif
-- [ ] **CPU & Memory Monitoring** — Monitor real-time penggunaan resource
-- [ ] **Log Rotation** — Konfigurasi logrotate untuk semua service
+- [x] **vnStat Monitoring** — Install & konfigurasi vnStat, web interface (port 8899)
+- [x] **Fail2ban Lanjutan** — Konfigurasi jail SSH, Dropbear, Xray brute-force protection
+- [x] **Firewall UFW/iptables** — Auto konfigurasi firewall rules
+- [x] **Rclone Backup/Restore** — Setup Rclone, integrasi Google Drive/Dropbox/OneDrive
+- [x] **Auto Backup** — Cronjob backup otomatis
+- [x] **HideSSH Web Panel** — Web panel terintegrasi
+- [x] **Webmin** — Web-based system admin panel
+- [x] **SWAP Memory** — Otomatis setup swap file (1GB/2GB selectable)
+- [x] **Auto Block Ads Indo** — Block iklan Indonesia via hosts file
+- [x] **Domain Blacklist** — Block domain tertentu via Xray routing
+- [x] **BT Download Block** — Blokir P2P/BitTorrent
+- [x] **IP Whitelist/Blacklist** — Manajemen IP akses
+- [x] **Service on Demand** — Service hanya berjalan jika ada akun aktif
+- [x] **CPU & Memory Monitoring** — Monitor real-time penggunaan resource
+- [x] **Log Rotation** — Konfigurasi logrotate untuk semua service
 
 **Test:** `tests/test_setup_monitor.sh`
 
@@ -1381,8 +1381,8 @@ Integrasi semua komponen, optimasi, dan pembuatan auto-installer tunggal.
 
 ```
 Tahap 1-7  : ████████████████████████████████  100%  ✅ Selesai (Infrastruktur + Protokol + Akun + Menu)
-Tahap 8    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 API & Bot
-Tahap 9    : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 Monitoring & Security
+Tahap 8    : ████████████████████████████████  100%  ✅ API & Bot
+Tahap 9    : ████████████████████████████████  100%  ✅ Monitoring & Security
 Tahap 10   : ░░░░░░░░░░░░░░░░░░░░   0%  🔲 Finalisasi
 ```
 
@@ -1391,8 +1391,8 @@ Tahap 10   : ░░░░░░░░░░░░░░░░░░░░   0%  
 | **Fase 1 — Infrastruktur** | Tahap 1-4 | ✅ Selesai | — |
 | **Fase 2 — Ekspansi Protokol** | Tahap 5 | ✅ Selesai | — |
 | **Fase 3 — User Experience** | Tahap 6-7 | ✅ Selesai | — |
-| **Fase 4 — Integrasi** | Tahap 8 | 2-3 minggu | 🔴 Tinggi |
-| **Fase 5 — Hardening** | Tahap 9-10 | 3-4 minggu | 🟡 Sedang |
+| **Fase 4 — Integrasi** | Tahap 8 | ✅ Selesai | — |
+| **Fase 5 — Hardening** | Tahap 9-10 | Tahap 9 ✅, Tahap 10 🔲 | 🟡 Sedang |
 
 > **Total estimasi:** 10-14 minggu untuk script production-ready
 
@@ -1400,7 +1400,39 @@ Tahap 10   : ░░░░░░░░░░░░░░░░░░░░   0%  
 
 ## 📝 Changelog
 
-### v0.7.0 — Tahap 7 (Current)
+### v0.9.0 — Tahap 9 (Current)
+- ✅ vnStat Monitoring — Install & konfigurasi, web interface (port 8899)
+- ✅ Fail2ban Lanjutan — Jail SSH, Dropbear, Xray auth, nginx, recidive
+- ✅ Firewall UFW/iptables — Auto konfigurasi firewall rules (25+ port rules)
+- ✅ Rclone Backup/Restore — Script backup/restore dengan cloud integration
+- ✅ Auto Backup cronjob (harian jam 02:00)
+- ✅ HideSSH Web Panel — Web panel terintegrasi
+- ✅ Webmin — Install script untuk web-based admin panel
+- ✅ SWAP Memory — Setup swap 1GB/2GB/off via vpnray-swap
+- ✅ Auto Block Ads Indo — Block iklan Indonesia via hosts file
+- ✅ Domain Blacklist — Block domain via Xray routing
+- ✅ BT Download Block — Blokir P2P/BitTorrent via iptables
+- ✅ IP Whitelist/Blacklist — Manajemen IP akses
+- ✅ Service on Demand — Service hanya berjalan jika ada akun aktif (cronjob 5 menit)
+- ✅ CPU & Memory Monitoring — Monitor real-time (vpnray-cpu-monitor, vpnray-mem-monitor, vpnray-resource-monitor)
+- ✅ Log Rotation — Konfigurasi logrotate untuk semua service
+
+### v0.8.0 — Tahap 8
+- ✅ REST API Server (port 9000) — socat-based HTTP API server
+- ✅ API Authentication — Token-based Bearer auth
+- ✅ 11 endpoint akun per protokol (create, delete, list, detail, renew, lock, unlock, ban, unban, limit-ip, limit-quota)
+- ✅ 8 protokol didukung (SSH, VMess, VLESS, Trojan, Shadowsocks, Socks, Hysteria2, Trojan-Go)
+- ✅ Server endpoints (status, bandwidth, running, reboot)
+- ✅ Utility endpoints (backup, restore, subscription, clash config)
+- ✅ API Documentation endpoint (/api/docs)
+- ✅ CORS support
+- ✅ Telegram Bot Remote — Long-polling bot dengan /start, /status, /running, /list_*, /bandwidth, /reboot
+- ✅ Telegram Bot Seller Panel — Trial & purchase panel
+- ✅ Telegram Bot Notification — Event-based notifications
+- ✅ Webhook Integration — Account & server event webhooks
+- ✅ Systemd services (vpnray-api, vpnray-bot)
+
+### v0.7.0 — Tahap 7
 - ✅ Menu Utama (`menu`) — Dashboard interaktif dengan box drawing & server info
 - ✅ 8 Protocol Sub-menus (SSH, VMess, VLESS, Trojan, Shadowsocks, Socks, Hysteria2, Trojan-Go)
 - ✅ 14 operasi per protokol (create, bulk create, delete, extend, check login, details, lock, unlock, limit IP, limit quota, ban, unban, recover, list)
